@@ -36,7 +36,9 @@ class FrontController
         }
         
         // Fallback if view helper doesn't exist
-        extract($data);
+        foreach ($data as $key => $value) {
+        ${$key} = htmlspecialchars($value, ENT_QUOTES);
+    }
         include __DIR__ . '/../../views/' . $template;
     }
 

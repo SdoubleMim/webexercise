@@ -1,6 +1,19 @@
 <?php
+
+// Debugging setup
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Verify the request URI
+echo "<pre>Debug Info:\n";
+echo "REQUEST_URI: " . ($_SERVER['REQUEST_URI'] ?? 'NULL') . "\n";
+echo "SCRIPT_NAME: " . ($_SERVER['SCRIPT_NAME'] ?? 'NULL') . "\n";
+echo "Working Directory: " . __DIR__ . "\n";
+echo "</pre>";
+
 // 1. Load dependencies - MUST BE FIRST
 require __DIR__.'/vendor/autoload.php';
+
 require_once(__DIR__.'/helper/functions.php');
 
 // 2. Define constants
@@ -26,6 +39,8 @@ try {
     $route->addRoute("GET", "/webexercise/", [FrontController::class, 'home']);
     $route->addRoute("GET", "/webexercise/about", [FrontController::class, 'about']);
     $route->addRoute("GET", "/webexercise/infs", [FrontController::class, 'infs']);
+    $route->addRoute("GET", "/webexercise/", [FrontController::class, 'home']);
+    $route->addRoute("GET", "/webexercise/404", [FrontController::class, 'notFound']);
     
     // Handle the request
     $route->dispatch();
@@ -43,9 +58,10 @@ try {
         echo "<p>Something went wrong. Please try again later.</p>";
         
         // Development mode - show details
-        if (getenv('APP_ENV') === 'development') {
-            echo "<pre>" . $e->getMessage() . "</pre>";
-            echo "<pre>" . $e->getTraceAsString() . "</pre>";
+        define('ENVIRONMENT', getenv('APP_ENV') ?: 'production');
+        if (ENVIRONMENT === 'development') {
+            error_reporting(E_ALL);
+            ini_set('display_errors', 1);
         }
     }
 }

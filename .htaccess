@@ -1,0 +1,9 @@
+RewriteEngine On
+RewriteBase /
+
+# Ignore real files/directories (like CSS/JS)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Redirect all requests to index.php
+RewriteRule ^(.*)$ /webexercise/index.php [L,QSA]
