@@ -3,7 +3,8 @@
     "description": "PHP MVC Blog Project",
     "type": "project",
     "require": {
-        "php": ">=7.4"
+        "php": ">=7.4",
+        "illuminate/database": "^12.16"
     },
     "autoload": {
         "psr-4": {
