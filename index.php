@@ -1,33 +1,51 @@
 <?php
-// Basic constants and autoloading (unchanged)
-define('ROOT_PATH', __DIR__);
+// 1. Load dependencies - MUST BE FIRST
 require __DIR__.'/vendor/autoload.php';
 require_once(__DIR__.'/helper/functions.php');
 
-// Database setup (unchanged)
+// 2. Define constants
+define('ROOT_PATH', __DIR__);
+
+// 3. Database setup
 use Illuminate\Database\Capsule\Manager as Capsule;
+
 $config = require __DIR__.'/config/database.php';
 $capsule = new Capsule;
 $capsule->addConnection($config);
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
 
-// Routing (unchanged structure, just added error handling)
+// 4. Routing setup
 use App\Route;
 use App\Controller\FrontController;
 
 $route = new Route();
 
 try {
-    // Your original routes (unchanged)
-    $route->addRoute("GET","/webexercise/",[FrontController::class, 'home']);
-    $route->addRoute("GET",'/webexercise/about',[FrontController::class, 'about']);
-    $route->addRoute("GET",'/webexercise/infs',[FrontController::class, 'infs']);
+    // Define routes
+    $route->addRoute("GET", "/webexercise/", [FrontController::class, 'home']);
+    $route->addRoute("GET", "/webexercise/about", [FrontController::class, 'about']);
+    $route->addRoute("GET", "/webexercise/infs", [FrontController::class, 'infs']);
     
+    // Handle the request
     $route->dispatch();
+
 } catch (Throwable $e) {
-    // Minimal error handling just to prevent white screens
+    // Error handling
     error_log('Error in index.php: ' . $e->getMessage());
     http_response_code(500);
-    echo "Something went wrong. Please try again later.";
+    
+    // Show simple error page
+    if (file_exists(__DIR__.'/views/errors/500.php')) {
+        require __DIR__.'/views/errors/500.php';
+    } else {
+        echo "<h1>500 Error</h1>";
+        echo "<p>Something went wrong. Please try again later.</p>";
+        
+        // Development mode - show details
+        if (getenv('APP_ENV') === 'development') {
+            echo "<pre>" . $e->getMessage() . "</pre>";
+            echo "<pre>" . $e->getTraceAsString() . "</pre>";
+        }
+    }
 }
