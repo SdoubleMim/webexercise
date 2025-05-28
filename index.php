@@ -41,7 +41,12 @@ try {
     $route->addRoute("GET", "/webexercise/infs", [FrontController::class, 'infs']);
     $route->addRoute("GET", "/webexercise/", [FrontController::class, 'home']);
     $route->addRoute("GET", "/webexercise/404", [FrontController::class, 'notFound']);
-    
+        // Add these routes after your existing ones
+    $route->addRoute("GET", "/users/create", [FrontController::class, 'createUser']);
+    $route->addRoute("POST", "/users/create", [FrontController::class, 'createUser']);
+    $route->addRoute("GET", "/users/{id}/edit", [FrontController::class, 'editUser']);
+    $route->addRoute("POST", "/users/{id}/edit", [FrontController::class, 'editUser']);
+    $route->addRoute("DELETE", "/users/{id}", [FrontController::class, 'deleteUser']);
     // Handle the request
     $route->dispatch();
 

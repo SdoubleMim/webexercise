@@ -3,16 +3,45 @@ namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 
-class User extends Model {
+class User extends Model 
+{
     protected $table = 'users';
-    
-    public function composite(): string
+    protected $fillable = ['name', 'email', 'password']; // Fields that can be mass-assigned
+
+    public static function createUser(array $data): ?self
     {
-        return "{$this->name} ({$this->email})";
+        try {
+            return static::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => password_hash($data['password'], PASSWORD_DEFAULT)
+            ]);
+        } catch (\Exception $e) {
+            error_log('User creation failed: ' . $e->getMessage());
+            return null;
+        }
     }
-    
-    public static function find(int $id): ?self
+
+    public function updateUser(array $data): bool
     {
-        return static::query()->find($id);
+        try {
+            if (isset($data['password'])) {
+                $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+            }
+            return $this->update($data);
+        } catch (\Exception $e) {
+            error_log('User update failed: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public static function deleteUser(int $id): bool
+    {
+        try {
+            return (bool) static::destroy($id);
+        } catch (\Exception $e) {
+            error_log('User deletion failed: ' . $e->getMessage());
+            return false;
+        }
     }
 }
